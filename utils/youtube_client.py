@@ -158,7 +158,7 @@ class YouTubeClient:
     # ---------------------------------------------------------------------
     # Core API methods
     # ---------------------------------------------------------------------
-    def search_song(self, title: str, artist: str, limit: int = 5) -> List[Dict]:
+    def search_song(self, title: str, artist: str, limit: int = 15) -> List[Dict]:
         """Search for a song on YouTube.
 
         Returns a list of video dictionaries containing ``videoId`` and basic

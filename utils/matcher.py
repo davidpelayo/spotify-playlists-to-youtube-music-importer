@@ -4,7 +4,6 @@ Song matching utilities for finding YouTube Music equivalents of Spotify tracks.
 from typing import Dict, List, Optional, Tuple
 from difflib import SequenceMatcher
 
-
 def normalize_string(s: str) -> str:
     """
     Normalize a string for comparison.
@@ -96,7 +95,7 @@ def find_youtube_match(spotify_track: Dict, youtube_client) -> Optional[str]:
     results = youtube_client.search_song(
         title=spotify_track['title'],
         artist=spotify_track['artist'],
-        limit=5
+        limit=15
     )
     
     # Find best match

@@ -237,7 +237,7 @@ def migrate():
                     yield f"data: {json.dumps({'type': 'track_progress', 'current': j + 1, 'total': len(tracks), 'track_name': track_name, 'status': 'searching'})}\n\n"
                     
                     # Search for match
-                    results = youtube.search_song(track['title'], track['artist'], limit=5)
+                    results = youtube.search_song(track['title'], track['artist'], limit=15)
                     
                     from utils.matcher import match_song
                     match, confidence = match_song(track, results)
