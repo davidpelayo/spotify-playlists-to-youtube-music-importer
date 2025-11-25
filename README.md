@@ -201,7 +201,7 @@ If all checks pass, you're ready to migrate playlists!
 
 ## License
 
-MIT License - feel free to use and modify as needed!
+GNU GPLv3 - see more [here](./LICENSE.md)
 
 ## Contributing
 
