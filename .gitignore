@@ -14,6 +14,8 @@ ENV/
 # OAuth credentials
 oauth.json
 .cache*
+client_secret.json
+token.json
 
 # SSL certificates
 cert.pem

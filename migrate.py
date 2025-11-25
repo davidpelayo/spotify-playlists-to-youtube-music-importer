@@ -144,10 +144,10 @@ def main():
         
         print(f"✅ Loaded {len(tracks)} tracks")
         
-        # Create playlist on YouTube Music
-        print(f"📝 Creating playlist on YouTube Music...")
+        # Create YouTube Music playlist with sanitized title (no spaces allowed)
+        print(f"\n📝 Creating YouTube Music playlist...")
         yt_playlist_id = youtube.create_playlist(
-            title=f"spotify-{playlist['name']}",
+            title=f"{playlist['name']}",
             description=playlist['description'] or f"Migrated from Spotify",
             privacy_status="PRIVATE"
         )

@@ -22,9 +22,9 @@ SPOTIFY_CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
 SPOTIFY_CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
 SPOTIFY_REDIRECT_URI = os.getenv('SPOTIFY_REDIRECT_URI')
 
-YOUTUBE_CLIENT_ID = os.getenv('YOUTUBE_CLIENT_ID')
-YOUTUBE_CLIENT_SECRET = os.getenv('YOUTUBE_CLIENT_SECRET')
-print(f"DEBUG: YouTube Client ID: {YOUTUBE_CLIENT_ID[:20]}...")
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET')
+print(f"DEBUG: YouTube Client ID: {GOOGLE_CLIENT_ID[:20]}...")
 
 
 @app.route('/')
@@ -78,10 +78,26 @@ def spotify_callback():
 
 @app.route('/auth/youtube')
 def youtube_auth():
-    """Initiate YouTube Music OAuth flow."""
-    # For YouTube Music, we'll use a different approach
-    # Store a flag to trigger OAuth in the frontend
-    return redirect('/?youtube=auth')
+    """Initiate YouTube OAuth flow."""
+    youtube = YouTubeClient()
+    auth_url = youtube.get_authorization_url()
+    return redirect(auth_url)
+
+
+@app.route('/auth/youtube/callback')
+def youtube_callback():
+    """Handle YouTube OAuth callback."""
+    code = request.args.get('code')
+    
+    if not code:
+        return "Error: No authorization code received", 400
+    
+    youtube = YouTubeClient()
+    if youtube.exchange_code_for_token(code):
+        session['youtube_authenticated'] = True
+        return redirect('/?youtube=connected')
+    
+    return "Error: Failed to exchange authorization code", 400
 
 
 @app.route('/api/spotify/status')
@@ -122,19 +138,15 @@ def get_spotify_playlists():
 
 @app.route('/api/youtube/authenticate', methods=['POST'])
 def youtube_authenticate():
-    """Authenticate with YouTube Music."""
+    """Check YouTube Music authentication status."""
     try:
         youtube = YouTubeClient()
         
-        # Use session-specific oauth file
-        oauth_path = f'oauth_{session.get("session_id", "default")}.json'
-        
-        if youtube.authenticate(oauth_path):
+        if youtube.authenticate('token.json'):
             session['youtube_authenticated'] = True
-            session['youtube_oauth_path'] = oauth_path
             return jsonify({'success': True})
         
-        return jsonify({'error': 'Authentication failed'}), 400
+        return jsonify({'error': 'Not authenticated. Please click "Connect YouTube Music"'}), 401
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -163,17 +175,19 @@ def migrate():
     if not playlist_ids:
         return jsonify({'error': 'No playlists selected'}), 400
     
+    # Extract session values before generator (to avoid request context issues)
+    spotify_token = session['spotify_token']['access_token']
+    youtube_oauth_path = 'token.json'  # Always use token.json for YouTube OAuth
+    
     # Use Server-Sent Events for real-time progress
     def generate():
         try:
             # Initialize clients
             spotify = SpotifyClient()
-            spotify.sp = spotipy.Spotify(auth=session['spotify_token']['access_token'])
+            spotify.sp = spotipy.Spotify(auth=spotify_token)
             
             youtube = YouTubeClient()
-            oauth_path = session.get('youtube_oauth_path', 'oauth.json')
-            youtube.ytmusic = __import__('ytmusicapi').YTMusic(oauth_path)
-            
+            youtube.authenticate(youtube_oauth_path)
             # Get playlist details
             all_playlists = spotify.get_playlists()
             selected_playlists = [p for p in all_playlists if p['id'] in playlist_ids]
@@ -187,10 +201,12 @@ def migrate():
                 tracks = spotify.get_playlist_tracks(playlist['id'])
                 yield f"data: {json.dumps({'type': 'tracks_loaded', 'count': len(tracks)})}\n\n"
                 
-                # Create YouTube playlist
+                # Create YouTube playlist with sanitized title (no spaces allowed)
+                sanitized_title = f"{playlist['name']}"
+                playlist_description = playlist.get('description') or f"Migrated from Spotify playlist: {playlist['name']}"
                 yt_playlist_id = youtube.create_playlist(
-                    title=f"spotify-{playlist['name']}",
-                    description=playlist['description'] or "Migrated from Spotify",
+                    title=sanitized_title,
+                    description=playlist_description,
                     privacy_status="PRIVATE"
                 )
                 
@@ -253,36 +269,36 @@ if __name__ == '__main__':
             session['session_id'] = str(uuid.uuid4())
     
     # Check if SSL certificates exist
-    import os
-    cert_file = 'cert.pem'
-    key_file = 'key.pem'
+    # import os
+    # cert_file = 'cert.pem'
+    # key_file = 'key.pem'
     
-    if not os.path.exists(cert_file) or not os.path.exists(key_file):
-        print("\n⚠️  SSL certificates not found!")
-        print("Generating self-signed certificates for HTTPS...")
-        print("(Required for Spotify OAuth)\n")
+    # if not os.path.exists(cert_file) or not os.path.exists(key_file):
+    #     print("\n⚠️  SSL certificates not found!")
+    #     print("Generating self-signed certificates for HTTPS...")
+    #     print("(Required for Spotify OAuth)\n")
         
-        # Generate certificates
-        os.system('python3 generate_cert.py')
+    #     # Generate certificates
+    #     os.system('python3 generate_cert.py')
         
-        if not os.path.exists(cert_file) or not os.path.exists(key_file):
-            print("\n❌ Failed to generate SSL certificates.")
-            print("Please run: python3 generate_cert.py\n")
-            exit(1)
+    #     if not os.path.exists(cert_file) or not os.path.exists(key_file):
+    #         print("\n❌ Failed to generate SSL certificates.")
+    #         print("Please run: python3 generate_cert.py\n")
+    #         exit(1)
     
     print("\n" + "="*60)
     print("  Starting Playlist Migrator Web App")
     print("="*60)
-    print(f"\n🌐 Server running at: https://playlists.migrator:5000")
+    print(f"\n🌐 Server running at: http://127.0.0.1:5000")
     print("\n⚠️  Your browser will show a security warning because we're")
     print("   using a self-signed certificate. This is normal for local")
     print("   development. Click 'Advanced' and 'Proceed to localhost'.\n")
     print("="*60 + "\n")
     
     # Run with SSL context
-    ssl_context = (cert_file, key_file)
+    # ssl_context = (cert_file, key_file)
     app.run(
         debug=os.getenv('FLASK_DEBUG', 'False') == 'True',
         port=5000,
-        ssl_context=ssl_context
+        # ssl_context=ssl_context
     )
