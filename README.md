@@ -2,6 +2,8 @@
 
 Migrate your playlists from Spotify to YouTube Music with ease! This tool provides both a command-line interface for automated migration and a beautiful web application with a side-by-side interface.
 
+![Web Interface](web_interface.png)
+
 ## Features
 
 - 🎵 **CLI Script**: Automated playlist migration from command line
