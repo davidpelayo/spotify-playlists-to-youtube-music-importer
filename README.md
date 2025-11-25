@@ -78,13 +78,7 @@ GOOGLE_REDIRECT_URI=http://127.0.0.1:5000/auth/youtube/callback
 FLASK_SECRET_KEY=generate_a_random_secret_key
 ```
 
-Add the following line to `/etc/hosts`:
-
-```bash
-127.0.0.1 playlists.migrator
-```
-
-### 5. Generate SSL Certificates
+### 5. [OPTIONAL] Generate SSL Certificates
 
 **Important:** Spotify requires HTTPS for OAuth callbacks. Generate self-signed certificates:
 
