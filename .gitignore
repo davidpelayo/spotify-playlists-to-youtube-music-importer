@@ -28,3 +28,6 @@ key.pem
 # OS
 .DS_Store
 Thumbs.db
+
+# oauth
+oauth_*.json

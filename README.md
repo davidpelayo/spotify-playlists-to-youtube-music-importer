@@ -34,7 +34,7 @@ pip install -r requirements.txt
 3. Fill in the app details:
    - App name: "Playlist Migrator" (or any name)
    - App description: "Migrate playlists to YouTube Music"
-   - Redirect URI: `https://playlists.migrate:5000/auth/spotify/callback` ⚠️ **Must be HTTPS**
+   - Redirect URI: `https://playlists.migrator:5000/auth/spotify/callback` ⚠️ **Must be HTTPS**
 4. Save your **Client ID** and **Client Secret**
 
 ### 3. YouTube Music API Credentials
@@ -42,10 +42,13 @@ pip install -r requirements.txt
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
 3. Enable the **YouTube Data API v3**
-4. Go to "Credentials" → "Create Credentials" → "OAuth client ID"
-5. Select application type: **Web application** (NOT TV devices)
-6. Add authorized redirect URI: `http://localhost:8080` (this is used by ytmusicapi)
-7. Save your **Client ID** and **Client Secret**
+4. Create OAuth 2.0 credentials:
+   - Go to "Credentials" → "Create Credentials" → "OAuth client ID"
+   - Application type: Select **"TVs and Limited Input devices"**
+   - Name: "YouTube Music Migrator" (or any name)
+5. Save your **Client ID** and **Client Secret**
+
+> **Note:** The ytmusicapi uses Google's device flow, which requires "TVs and Limited Input devices" client type. No redirect URI is needed for this flow.
 
 ### 4. Configure Environment Variables
 
@@ -58,11 +61,11 @@ Edit `.env` and add your credentials:
 ```env
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-SPOTIFY_REDIRECT_URI=https://playlists.migrate:5000/auth/spotify/callback
+SPOTIFY_REDIRECT_URI=https://playlists.migrator:5000/auth/spotify/callback
 
 YOUTUBE_CLIENT_ID=your_youtube_client_id
 YOUTUBE_CLIENT_SECRET=your_youtube_client_secret
-YOUTUBE_REDIRECT_URI=https://playlists.migrate:5000/auth/youtube/callback
+YOUTUBE_REDIRECT_URI=https://playlists.migrator:5000/auth/youtube/callback
 
 FLASK_SECRET_KEY=generate_a_random_secret_key
 ```
@@ -70,7 +73,7 @@ FLASK_SECRET_KEY=generate_a_random_secret_key
 Add the following line to `/etc/hosts`:
 
 ```bash
-127.0.0.1 playlists.migrate
+127.0.0.1 playlists.migrator
 ```
 
 ### 5. Generate SSL Certificates
@@ -83,7 +86,7 @@ python3 generate_cert.py
 
 This creates `cert.pem` and `key.pem` for local HTTPS development.
 
-> **Note:** Your browser will show a security warning when accessing `https://playlists.migrate:5000`. This is normal for self-signed certificates. Click "Advanced" → "Proceed to localhost" to continue.
+> **Note:** Your browser will show a security warning when accessing `https://playlists.migrator:5000`. This is normal for self-signed certificates. Click "Advanced" → "Proceed to localhost" to continue.
 
 ## Usage
 
@@ -112,7 +115,7 @@ python app.py
 
 The app will automatically generate SSL certificates if they don't exist.
 
-Then open your browser to `https://playlists.migrate:5000`
+Then open your browser to `https://playlists.migrator:5000`
 
 > **Browser Security Warning:** You'll see a warning about the self-signed certificate. Click "Advanced" and "Proceed to localhost (unsafe)" - this is safe for local development.
 
@@ -142,7 +145,7 @@ Then open your browser to `https://playlists.migrate:5000`
 ### "Invalid client" error
 - Double-check your Client ID and Client Secret in `.env`
 - Ensure redirect URIs match exactly in both the `.env` file and the app settings
-- **Verify redirect URI uses HTTPS:** `https://playlists.migrate:5000/auth/spotify/callback`
+- **Verify redirect URI uses HTTPS:** `https://playlists.migrator:5000/auth/spotify/callback`
 
 ### Browser security warning
 - This is expected with self-signed certificates

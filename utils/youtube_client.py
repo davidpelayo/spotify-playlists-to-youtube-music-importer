@@ -2,6 +2,7 @@
 YouTube Music API client wrapper for playlist operations.
 """
 from ytmusicapi import YTMusic
+from ytmusicapi.auth.oauth.credentials import OAuthCredentials
 import os
 import json
 from typing import List, Dict, Optional
@@ -37,7 +38,13 @@ class YouTubeClient:
             if os.path.exists(oauth_path):
                 # Try to use existing credentials
                 try:
-                    self.ytmusic = YTMusic(oauth_path)
+                    self.ytmusic = YTMusic(
+                        oauth_path,
+                        oauth_credentials=OAuthCredentials(
+                            client_id=self.client_id,
+                            client_secret=self.client_secret
+                        )
+                    )
                     return True
                 except Exception:
                     # If existing credentials are invalid, delete and re-authenticate
@@ -59,8 +66,14 @@ class YouTubeClient:
                 client_secret=self.client_secret
             )
             
-            # Initialize YTMusic with the oauth file
-            self.ytmusic = YTMusic(oauth_path)
+            # Initialize YTMusic with the oauth file and credentials
+            self.ytmusic = YTMusic(
+                oauth_path,
+                oauth_credentials=OAuthCredentials(
+                    client_id=self.client_id,
+                    client_secret=self.client_secret
+                )
+            )
             
             return True
         except Exception as e:

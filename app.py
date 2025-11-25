@@ -273,7 +273,7 @@ if __name__ == '__main__':
     print("\n" + "="*60)
     print("  Starting Playlist Migrator Web App")
     print("="*60)
-    print(f"\n🌐 Server running at: https://playlists.migrate:5000")
+    print(f"\n🌐 Server running at: https://playlists.migrator:5000")
     print("\n⚠️  Your browser will show a security warning because we're")
     print("   using a self-signed certificate. This is normal for local")
     print("   development. Click 'Advanced' and 'Proceed to localhost'.\n")
