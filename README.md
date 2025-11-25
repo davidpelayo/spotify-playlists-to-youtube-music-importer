@@ -36,7 +36,7 @@ pip install -r requirements.txt
 3. Fill in the app details:
    - App name: "Playlist Migrator" (or any name)
    - App description: "Migrate playlists to YouTube Music"
-   - Redirect URI: `http://127.0.0.1:5000/auth/spotify/callback` ⚠️ **Must be HTTPS**
+   - Redirect URI: `http://127.0.0.1:5000/auth/spotify/callback`
 4. Save your **Client ID** and **Client Secret**
 
 ### 3. YouTube Music API Credentials
