@@ -207,6 +207,10 @@ GNU GPLv3 - see more [here](./LICENSE.md)
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
+## Releases
+
+See the [Releases](./RELEASE_NOTES.md) page for release notes and changelog.
+
 ## Disclaimer
 
 This tool is not affiliated with Spotify or YouTube. Use at your own risk. Make sure to review YouTube Data API's terms of service and quota limits before heavy usage.
