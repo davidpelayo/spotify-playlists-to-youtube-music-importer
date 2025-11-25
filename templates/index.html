@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Migrate your Spotify playlists to YouTube Music with ease">
+    <title>Spotify to YouTube Music Migrator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>🎵 Playlist Migrator</h1>
+        <p>Seamlessly transfer your Spotify playlists to YouTube Music</p>
+    </header>
+
+    <div class="container">
+        <!-- Split Panel Layout -->
+        <div class="split-layout">
+            <!-- Spotify Panel -->
+            <div class="panel" id="spotify-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="icon">🎧</span>
+                        Spotify
+                    </h2>
+                    <div id="spotify-status">
+                        <span class="status status-disconnected">
+                            <span class="status-dot"></span>
+                            Disconnected
+                        </span>
+                    </div>
+                </div>
+
+                <div id="spotify-content">
+                    <div id="spotify-auth-section">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔐</div>
+                            <h3>Connect Your Spotify Account</h3>
+                            <p>Authorize access to view your playlists</p>
+                        </div>
+                        <button class="btn btn-spotify" id="spotify-auth-btn" onclick="connectSpotify()">
+                            <span>Connect Spotify</span>
+                        </button>
+                    </div>
+
+                    <div id="spotify-playlists-section" style="display: none;">
+                        <div style="margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                            <p class="playlist-count" id="playlist-count">Loading playlists...</p>
+                            <button class="btn" onclick="selectAll()" id="select-all-btn" style="padding: 0.5rem 1rem; font-size: 0.85rem; background: rgba(255,255,255,0.1);">
+                                <span>Select All</span>
+                            </button>
+                        </div>
+                        <div class="playlist-list" id="playlist-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YouTube Music Panel -->
+            <div class="panel" id="youtube-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <span class="icon">▶️</span>
+                        YouTube Music
+                    </h2>
+                    <div id="youtube-status">
+                        <span class="status status-disconnected">
+                            <span class="status-dot"></span>
+                            Disconnected
+                        </span>
+                    </div>
+                </div>
+
+                <div id="youtube-content">
+                    <div id="youtube-auth-section">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔐</div>
+                            <h3>Connect YouTube Music</h3>
+                            <p>Authorize access to create playlists</p>
+                        </div>
+                        <button class="btn btn-youtube" id="youtube-auth-btn" onclick="connectYouTube()">
+                            <span>Connect YouTube Music</span>
+                        </button>
+                    </div>
+
+                    <div id="youtube-ready-section" style="display: none;">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">✅</div>
+                            <h3>Ready to Migrate</h3>
+                            <p>Select playlists from Spotify and click migrate below</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Migration Section -->
+        <div class="migration-section">
+            <div class="migration-controls">
+                <div class="selection-info">
+                    <span class="selection-count" id="selection-count">0</span> playlist(s) selected
+                </div>
+                <button class="btn btn-primary" id="migrate-btn" onclick="startMigration()" disabled>
+                    <span>✨ Migrate Selected Playlists</span>
+                </button>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="progress-section" id="progress-section">
+                <div class="progress-header">
+                    <h3 class="progress-title" id="progress-title">Migration in Progress...</h3>
+                    <div class="progress-stats">
+                        <span class="stat">
+                            ⏳ <span id="current-playlist">0</span>/<span id="total-playlists">0</span> playlists
+                        </span>
+                        <span class="stat">
+                            🎵 <span id="matched-tracks">0</span> matched
+                        </span>
+                        <span class="stat">
+                            ❌ <span id="unmatched-tracks">0</span> unmatched
+                        </span>
+                    </div>
+                </div>
+                <div class="progress-log" id="progress-log"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
